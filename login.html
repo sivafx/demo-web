@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        lable{
+            width: 150px;
+            display: inline-block;
+        }
+        div{
+            margin-bottom: 10px;
+        }
+        #output{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+ <div>
+     <lable>Enter User Name</lable>
+     <input type="text" name="" id="username">
+ </div>
+ <div>
+     <lable>Enter Password</lable>
+     <input type="password" name="" id="password">
+ </div>
+ <div>
+     <button id="submit" type="submit">login</button>
+ </div>
+ <div>
+     <p id="output"></p>
+ </div>
+<script>
+    document.getElementById("submit").addEventListener('click',()=>{
+        username = document.getElementById("username").value;
+        password = document.getElementById("password").value;
+        if(username === 'shiva' && password =='secret'){
+            window.location = "login-success.html";
+        }else{
+            document.getElementById("output").innerHTML = "Invalid login credentials"
+        }
+    })
+</script>
+</body>
+</html>

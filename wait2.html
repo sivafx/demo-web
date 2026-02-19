@@ -1,8 +1,7 @@
-<hr>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Form Validation</title>
+    <title>Form Validation - Disabled Button</title>
 
     <style>
         body {
@@ -18,7 +17,6 @@
         }
 
         button {
-            display: none;   /* Initially hidden */
             padding: 8px;
             background-color: green;
             color: white;
@@ -28,6 +26,7 @@
 
         button:disabled {
             background-color: gray;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -56,7 +55,8 @@
         Accept Terms
     </label>
 
-    <button type="submit" id="submitBtn">Submit</button>
+    <!-- Button starts disabled -->
+    <button type="submit" id="submitBtn" disabled>Submit</button>
 
 </form>
 
@@ -71,17 +71,14 @@ const submitBtn = document.getElementById("submitBtn");
 
 function checkForm() {
 
-    if (
+    const isValid =
         nameInput.value.trim() !== "" &&
         emailInput.value.trim() !== "" &&
         passwordInput.value.trim() !== "" &&
         countryInput.value !== "" &&
-        termsInput.checked
-    ) {
-        submitBtn.style.display = "block";
-    } else {
-        submitBtn.style.display = "none";
-    }
+        termsInput.checked;
+
+    submitBtn.disabled = !isValid;
 }
 
 nameInput.addEventListener("input", checkForm);

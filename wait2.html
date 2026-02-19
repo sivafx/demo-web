@@ -79,6 +79,13 @@ function checkForm() {
         termsInput.checked;
 
     submitBtn.disabled = !isValid;
+
+    alert(
+        "Name:" + nameInput.value + "\n" +
+        "Email:" + emailInput.value + "\n" +
+        "Password:" + passwordInput.value + "\n" +
+        "Country:" + countryInput.value        
+    )
 }
 
 nameInput.addEventListener("input", checkForm);

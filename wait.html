@@ -53,3 +53,100 @@
 </script>
   </body>
 </html>
+<hr>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Form Validation</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 40px;
+        }
+
+        form {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            display: none;   /* Initially hidden */
+            padding: 8px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: gray;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Registration Form</h2>
+
+<form id="myForm">
+
+    <input type="text" id="name" placeholder="Enter Name">
+
+    <input type="email" id="email" placeholder="Enter Email">
+
+    <input type="password" id="password" placeholder="Enter Password">
+
+    <select id="country">
+        <option value="">Select Country</option>
+        <option value="India">India</option>
+        <option value="USA">USA</option>
+        <option value="UK">UK</option>
+    </select>
+
+    <label>
+        <input type="checkbox" id="terms">
+        Accept Terms
+    </label>
+
+    <button type="submit" id="submitBtn">Submit</button>
+
+</form>
+
+<script>
+
+const nameInput = document.getElementById("name");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const countryInput = document.getElementById("country");
+const termsInput = document.getElementById("terms");
+const submitBtn = document.getElementById("submitBtn");
+
+function checkForm() {
+
+    if (
+        nameInput.value.trim() !== "" &&
+        emailInput.value.trim() !== "" &&
+        passwordInput.value.trim() !== "" &&
+        countryInput.value !== "" &&
+        termsInput.checked
+    ) {
+        submitBtn.style.display = "block";
+    } else {
+        submitBtn.style.display = "none";
+    }
+}
+
+nameInput.addEventListener("input", checkForm);
+emailInput.addEventListener("input", checkForm);
+passwordInput.addEventListener("input", checkForm);
+countryInput.addEventListener("change", checkForm);
+termsInput.addEventListener("change", checkForm);
+
+</script>
+
+</body>
+</html>
+

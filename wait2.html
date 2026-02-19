@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Form Validation - Disabled Button</title>
+    <title>Form Validation - Alert Data</title>
 
     <style>
         body {
@@ -38,9 +38,7 @@
 <form id="myForm">
 
     <input type="text" id="name" placeholder="Enter Name">
-
     <input type="email" id="email" placeholder="Enter Email">
-
     <input type="password" id="password" placeholder="Enter Password">
 
     <select id="country">
@@ -55,13 +53,13 @@
         Accept Terms
     </label>
 
-    <!-- Button starts disabled -->
     <button type="submit" id="submitBtn" disabled>Submit</button>
 
 </form>
 
 <script>
 
+const form = document.getElementById("myForm");
 const nameInput = document.getElementById("name");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
@@ -78,24 +76,28 @@ function checkForm() {
         countryInput.value !== "" &&
         termsInput.checked;
 
-    submitBtn.disabled = !isValid;   
+    submitBtn.disabled = !isValid;
 }
-
-form.addEventListener("submit",(e)=>{
-    e.preventDefault();
-     alert(
-        "Name:" + nameInput.value + "\n" +
-        "Email:" + emailInput.value + "\n" +
-        "Password:" + passwordInput.value + "\n" +
-        "Country:" + countryInput.value        
-    )
-    )    
 
 nameInput.addEventListener("input", checkForm);
 emailInput.addEventListener("input", checkForm);
 passwordInput.addEventListener("input", checkForm);
 countryInput.addEventListener("change", checkForm);
 termsInput.addEventListener("change", checkForm);
+
+// Show data in alert on submit
+form.addEventListener("submit", function(event) {
+
+    event.preventDefault();  // prevent page refresh
+
+    alert(
+        "Name: " + nameInput.value + "\n" +
+        "Email: " + emailInput.value + "\n" +
+        "Password: " + passwordInput.value + "\n" +
+        "Country: " + countryInput.value
+    );
+
+});
 
 </script>
 

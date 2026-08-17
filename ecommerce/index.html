@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Commerce STLC Test Lab</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#1f2937}
+header{background:#075e5e;color:#fff;padding:18px 24px;position:sticky;top:0;z-index:10}
+header h1{margin:0 0 5px;font-size:22px}header p{margin:0;font-size:13px;opacity:.9}
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 78px)}
+.sidebar{background:#fff;border-right:1px solid #ddd;padding:15px;position:sticky;top:78px;height:calc(100vh - 78px);overflow:auto}
+.sidebar button{width:100%;text-align:left;border:0;background:transparent;padding:10px;border-radius:7px;cursor:pointer;margin:2px 0}
+.sidebar button:hover,.sidebar button.active{background:#e6f7f7;color:#075e5e;font-weight:bold}
+.main{padding:22px;max-width:1400px;width:100%}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+input,select,textarea{border:1px solid #cbd5e1;border-radius:6px;padding:9px;width:100%;background:#fff}
+.btn{border:0;border-radius:6px;padding:9px 14px;cursor:pointer;font-weight:bold}
+.primary{background:#075e5e;color:#fff}.secondary{background:#e5e7eb}.danger{background:#dc2626;color:#fff}
+.card{background:#fff;border:1px solid #e1e5e9;border-radius:10px;padding:18px;margin-bottom:18px;box-shadow:0 2px 6px #0000000a}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.metric{padding:16px;border-radius:9px;background:#f8fafc;border:1px solid #e2e8f0}.metric strong{font-size:25px;display:block}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:bold}
+.high{background:#fee2e2;color:#991b1b}.medium{background:#fef3c7;color:#92400e}.low{background:#dcfce7;color:#166534}
+.hidden{display:none!important}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.form-grid .full{grid-column:1/-1}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.product{border:1px solid #ddd;border-radius:8px;padding:12px;background:#fff}.product img{width:100%;height:130px;object-fit:cover;border-radius:6px;background:#eee}.product h4{margin:8px 0 5px}.price{font-weight:bold}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:9px;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px}th{background:#f8fafc}
+.test-list{max-height:420px;overflow:auto}.test-row{display:grid;grid-template-columns:150px 1fr 80px;gap:10px;padding:9px;border-bottom:1px solid #eee;align-items:center}
+.status{font-weight:bold;font-size:12px}.pass{color:#15803d}.fail{color:#dc2626}.blocked{color:#b45309}
+.notice{padding:10px;border-radius:7px;background:#eff6ff;color:#1d4ed8;margin:10px 0}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{position:relative;top:0;height:auto;border-right:0;border-bottom:1px solid #ddd}.form-grid{grid-template-columns:1fr}.test-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>E-Commerce STLC Test Lab</h1>
+<p>Interactive demo application for executing manual test scenarios using HTML, CSS and JavaScript</p>
+</header>
+<div class="layout">
+<aside class="sidebar" id="nav"></aside>
+<main class="main">
+<div class="toolbar">
+<button class="btn primary" onclick="showPage('home')">Application</button>
+<button class="btn secondary" onclick="showPage('tests')">Test Runner</button>
+<button class="btn secondary" onclick="showPage('reports')">Test Report</button>
+</div>
+<div id="app"></div>
+</main>
+</div>
+
+<script>
+const products=[
+{id:1,name:"Wireless Headphones",price:2499,cat:"Electronics",stock:8,img:"https://picsum.photos/seed/headphones/500/350"},
+{id:2,name:"Smart Watch",price:3999,cat:"Electronics",stock:5,img:"https://picsum.photos/seed/watch/500/350"},
+{id:3,name:"Running Shoes",price:2999,cat:"Fashion",stock:12,img:"https://picsum.photos/seed/shoes/500/350"},
+{id:4,name:"Backpack",price:1499,cat:"Fashion",stock:0,img:"https://picsum.photos/seed/bag/500/350"},
+{id:5,name:"Coffee Maker",price:4599,cat:"Home",stock:6,img:"https://picsum.photos/seed/coffee/500/350"},
+{id:6,name:"Desk Lamp",price:999,cat:"Home",stock:20,img:"https://picsum.photos/seed/lamp/500/350"}
+];
+
+const scenarios=[
+["Registration","TS_REG_001","Verify user registration with valid details","High"],
+["Registration","TS_REG_002","Verify registration with existing email","High"],
+["Registration","TS_REG_003","Verify registration with invalid email","Medium"],
+["Registration","TS_REG_004","Verify registration with mandatory fields blank","High"],
+["Registration","TS_REG_005","Verify password validation","High"],
+["Registration","TS_REG_006","Verify confirm password validation","High"],
+["Registration","TS_REG_007","Verify email/mobile verification","Medium"],
+["Login","TS_LOGIN_001","Verify login with valid credentials","High"],
+["Login","TS_LOGIN_002","Verify login with invalid username/email","High"],
+["Login","TS_LOGIN_003","Verify login with invalid password","High"],
+["Login","TS_LOGIN_004","Verify login with blank credentials","High"],
+["Login","TS_LOGIN_005","Verify Forgot Password functionality","Medium"],
+["Login","TS_LOGIN_006","Verify account lockout after multiple failed attempts","High"],
+["Login","TS_LOGIN_007","Verify Logout functionality","High"],
+["Home Page","TS_HOME_001","Verify home page loads successfully","High"],
+["Home Page","TS_HOME_002","Verify navigation menus","Medium"],
+["Home Page","TS_HOME_003","Verify product categories","Medium"],
+["Home Page","TS_HOME_004","Verify promotional banners","Medium"],
+["Home Page","TS_HOME_005","Verify links and buttons","Medium"],
+["Home Page","TS_HOME_006","Verify responsive behavior","Medium"],
+["Product Search","TS_SEARCH_001","Verify product search with valid product name","High"],
+["Product Search","TS_SEARCH_002","Verify search with partial product name","Medium"],
+["Product Search","TS_SEARCH_003","Verify search with invalid product name","Medium"],
+["Product Search","TS_SEARCH_004","Verify search with blank search field","Medium"],
+["Product Search","TS_SEARCH_005","Verify search suggestions/autocomplete","Medium"],
+["Product Search","TS_SEARCH_006","Verify search result count","Low"],
+["Product Listing","TS_PRODUCT_001","Verify products are displayed correctly","High"],
+["Product Listing","TS_PRODUCT_002","Verify product name and price","High"],
+["Product Listing","TS_PRODUCT_003","Verify product images","Medium"],
+["Product Listing","TS_PRODUCT_004","Verify product availability/stock status","High"],
+["Product Listing","TS_PRODUCT_005","Verify sorting functionality","Medium"],
+["Product Listing","TS_PRODUCT_006","Verify filtering functionality","Medium"],
+["Product Listing","TS_PRODUCT_007","Verify pagination","Low"],
+["Product Details","TS_DETAIL_001","Verify product details page","High"],
+["Product Details","TS_DETAIL_002","Verify product images","Medium"],
+["Product Details","TS_DETAIL_003","Verify product description","Medium"],
+["Product Details","TS_DETAIL_004","Verify product price","High"],
+["Product Details","TS_DETAIL_005","Verify product variants such as size/color","Medium"],
+["Product Details","TS_DETAIL_006","Verify product availability","High"],
+["Product Details","TS_DETAIL_007","Verify Add to Cart functionality","High"],
+["Product Details","TS_DETAIL_008","Verify product reviews and ratings","Medium"],
+["Shopping Cart","TS_CART_001","Verify adding product to cart","High"],
+["Shopping Cart","TS_CART_002","Verify removing product from cart","High"],
+["Shopping Cart","TS_CART_003","Verify increasing product quantity","High"],
+["Shopping Cart","TS_CART_004","Verify decreasing product quantity","High"],
+["Shopping Cart","TS_CART_005","Verify cart total calculation","High"],
+["Shopping Cart","TS_CART_006","Verify price calculation after quantity change","High"],
+["Shopping Cart","TS_CART_007","Verify cart behavior for out-of-stock products","High"],
+["Shopping Cart","TS_CART_008","Verify cart persistence after login/logout","Medium"],
+["Wishlist","TS_WISH_001","Verify adding product to wishlist","Medium"],
+["Wishlist","TS_WISH_002","Verify removing product from wishlist","Medium"],
+["Wishlist","TS_WISH_003","Verify moving wishlist product to cart","Medium"],
+["Wishlist","TS_WISH_004","Verify wishlist for logged-in user","Medium"],
+["Address","TS_ADDR_001","Verify adding a new delivery address","High"],
+["Address","TS_ADDR_002","Verify editing an existing address","Medium"],
+["Address","TS_ADDR_003","Verify deleting an address","Medium"],
+["Address","TS_ADDR_004","Verify mandatory address fields","High"],
+["Address","TS_ADDR_005","Verify selecting default address","Medium"],
+["Checkout","TS_CHECK_001","Verify checkout with valid cart items","Critical"],
+["Checkout","TS_CHECK_002","Verify checkout without login","High"],
+["Checkout","TS_CHECK_003","Verify delivery address selection","High"],
+["Checkout","TS_CHECK_004","Verify order summary","High"],
+["Checkout","TS_CHECK_005","Verify shipping charges","High"],
+["Checkout","TS_CHECK_006","Verify tax calculation","High"],
+["Checkout","TS_CHECK_007","Verify discount/coupon application","Medium"],
+["Checkout","TS_CHECK_008","Verify final order amount","Critical"],
+["Payment","TS_PAY_001","Verify payment using credit/debit card","Critical"],
+["Payment","TS_PAY_002","Verify payment using UPI","Critical"],
+["Payment","TS_PAY_003","Verify payment using net banking","Critical"],
+["Payment","TS_PAY_004","Verify payment using wallet","Critical"],
+["Payment","TS_PAY_005","Verify successful payment","Critical"],
+["Payment","TS_PAY_006","Verify failed payment","High"],
+["Payment","TS_PAY_007","Verify cancelled payment","High"],
+["Payment","TS_PAY_008","Verify payment timeout","High"],
+["Payment","TS_PAY_009","Verify duplicate payment prevention","Critical"],
+["Order","TS_ORDER_001","Verify order placement","Critical"],
+["Order","TS_ORDER_002","Verify order confirmation","High"],
+["Order","TS_ORDER_003","Verify order ID generation","High"],
+["Order","TS_ORDER_004","Verify order history","Medium"],
+["Order","TS_ORDER_005","Verify order details","Medium"],
+["Order","TS_ORDER_006","Verify order tracking","Medium"],
+["Order","TS_ORDER_007","Verify order cancellation","High"],
+["Order","TS_ORDER_008","Verify refund after cancellation","High"],
+["Notifications","TS_NOTIFY_001","Verify order confirmation notification","Medium"],
+["Notifications","TS_NOTIFY_002","Verify payment confirmation notification","Medium"],
+["Notifications","TS_NOTIFY_003","Verify shipping notification","Medium"],
+["Notifications","TS_NOTIFY_004","Verify delivery notification","Medium"],
+["Notifications","TS_NOTIFY_005","Verify cancellation notification","Medium"],
+["Notifications","TS_NOTIFY_006","Verify refund notification","Medium"],
+["Profile / Account","TS_PROFILE_001","Verify viewing user profile","Medium"],
+["Profile / Account","TS_PROFILE_002","Verify editing profile information","Medium"],
+["Profile / Account","TS_PROFILE_003","Verify changing password","High"],
+["Profile / Account","TS_PROFILE_004","Verify managing saved addresses","Medium"],
+["Profile / Account","TS_PROFILE_005","Verify managing saved payment methods","High"],
+["Non-Functional","TS_NFR_001","Verify application performance","High"],
+["Non-Functional","TS_NFR_002","Verify page loading time","High"],
+["Non-Functional","TS_NFR_003","Verify application under concurrent users","High"],
+["Non-Functional","TS_NFR_004","Verify security of login functionality","High"],
+["Non-Functional","TS_NFR_005","Verify unauthorized access","Critical"],
+["Non-Functional","TS_NFR_006","Verify browser compatibility","Medium"],
+["Non-Functional","TS_NFR_007","Verify mobile/tablet responsiveness","Medium"],
+["Non-Functional","TS_NFR_008","Verify accessibility","Medium"]
+];
+
+let state={user:null,cart:[],wishlist:[],addresses:[],orders:[],failedLogins:0,locked:false,results:{},page:"home"};
+let otp="123456";
+
+const modules=[...new Set(scenarios.map(x=>x[0]))];
+document.getElementById("nav").innerHTML=`<b>Modules</b>`+modules.map(m=>`<button onclick="showModule('${m}')">${m}</button>`).join("");
+
+function money(n){return "₹"+n.toLocaleString("en-IN")}
+function save(){localStorage.setItem("stlcLab",JSON.stringify(state))}
+function load(){try{Object.assign(state,JSON.parse(localStorage.getItem("stlcLab"))||{})}catch(e){}}
+load();
+
+function showPage(p){state.page=p;if(p==="home")renderHome();if(p==="tests")renderTests();if(p==="reports")renderReports()}
+function showModule(m){state.page="module";renderModule(m)}
+
+function renderHome(){
+document.getElementById("app").innerHTML=`
+<div class="card"><div class="section-title"><div><h2>ShopEasy E-Commerce</h2><p>Demo application intentionally built for QA/STLC practice.</p></div>
+<div><span class="badge ${state.user?'low':'medium'}">${state.user?'Logged in':'Guest'}</span></div></div>
+<div class="actions">
+<button class="btn primary" onclick="openLogin()">Login</button>
+<button class="btn secondary" onclick="openRegister()">Register</button>
+<button class="btn secondary" onclick="showCart()">Cart (${state.cart.length})</button>
+<button class="btn secondary" onclick="showWishlist()">Wishlist (${state.wishlist.length})</button>
+</div></div>
+<div class="card"><h3>Search Products</h3><div class="toolbar"><input id="search" placeholder="Try headphones, watch, shoes..." oninput="searchProducts()"><select id="cat" onchange="searchProducts()"><option value="">All Categories</option>${[...new Set(products.map(p=>p.cat))].map(c=>`<option>${c}</option>`).join("")}</select></div><div id="products" class="product-grid"></div></div>
+<div class="card"><h3>Quick Navigation</h3><div class="grid">
+<div class="metric"><strong>Home</strong>Products, banners, categories and navigation</div>
+<div class="metric"><strong>Account</strong>Registration, login, profile and addresses</div>
+<div class="metric"><strong>Commerce</strong>Search, product, cart, wishlist and checkout</div>
+<div class="metric"><strong>QA</strong>Run 99 supplied test scenarios</div>
+</div></div>`;
+searchProducts();
+}
+
+function searchProducts(){
+let q=(document.getElementById("search")?.value||"").toLowerCase(), c=document.getElementById("cat")?.value||"";
+let arr=products.filter(p=>(!q||p.name.toLowerCase().includes(q))&&(!c||p.cat===c));
+document.getElementById("products").innerHTML=arr.length?arr.map(p=>productHTML(p)).join(""):`<div class="notice">No products found.</div>`;
+}
+function productHTML(p){return `<div class="product"><img src="${p.img}" alt="${p.name}"><h4>${p.name}</h4><div>${p.cat}</div><div class="price">${money(p.price)}</div><div>${p.stock?`Stock: ${p.stock}`:`<span class="fail">Out of stock</span>`}</div><div class="actions"><button class="btn primary" onclick="addCart(${p.id})">Add Cart</button><button class="btn secondary" onclick="toggleWish(${p.id})">♡ Wishlist</button><button class="btn secondary" onclick="detail(${p.id})">Details</button></div></div>`}
+
+function openRegister(){document.getElementById("app").innerHTML=`<div class="card"><h2>User Registration</h2><form onsubmit="register(event)"><div class="form-grid"><label>Name<input id="rname" required></label><label>Email<input id="remail" type="email" required></label><label>Mobile<input id="rmobile" required pattern="[0-9]{10}"></label><label>Password<input id="rpass" type="password" required minlength="8"></label><label>Confirm Password<input id="rcpass" type="password" required></label><label>OTP (demo: 123456)<input id="rotp" required></label></div><div id="regmsg"></div><div class="actions"><button class="btn primary">Register</button><button type="button" class="btn secondary" onclick="renderHome()">Cancel</button></div></form></div>`}
+function register(e){e.preventDefault();let email=remail.value.trim(),pass=rpass.value,cp=rcpass.value;if(localStorage.getItem("registeredEmail")===email){regmsg.innerHTML='<div class="notice">Email already exists.</div>';return}if(pass!==cp){regmsg.innerHTML='<div class="notice">Passwords do not match.</div>';return}if(rotp.value!==otp){regmsg.innerHTML='<div class="notice">Invalid OTP.</div>';return}localStorage.setItem("registeredEmail",email);localStorage.setItem("registeredPass",pass);state.user={name:rname.value,email};save();regmsg.innerHTML='<div class="notice">Registration and verification successful.</div>'}
+
+function openLogin(){document.getElementById("app").innerHTML=`<div class="card"><h2>Login</h2><form onsubmit="login(event)"><label>Email<input id="lemail" type="email"></label><br><label>Password<input id="lpass" type="password"></label><div id="loginmsg"></div><div class="actions"><button class="btn primary">Login</button><button type="button" class="btn secondary" onclick="forgot()">Forgot Password</button></div></form></div>`}
+function login(e){e.preventDefault();if(state.locked){loginmsg.innerHTML='<div class="notice">Account locked after multiple failed attempts.</div>';return}let e1=lemail.value,p= lpass.value;if(e1===localStorage.getItem("registeredEmail")&&p===localStorage.getItem("registeredPass")){state.user={email:e1,name:e1.split("@")[0]};state.failedLogins=0;save();renderHome();return}state.failedLogins++;if(state.failedLogins>=3)state.locked=true;save();loginmsg.innerHTML=`<div class="notice">Invalid credentials. Failed attempts: ${state.failedLogins}/3</div>`}
+function forgot(){loginmsg.innerHTML='<div class="notice">Demo reset: use the registered email and contact support. No real email is sent.</div>'}
+
+function addCart(id){let p=products.find(x=>x.id===id);if(!p.stock){alert("Product is out of stock");return}let x=state.cart.find(x=>x.id===id);if(x)x.qty++;else state.cart.push({id,qty:1});save();alert("Product added to cart");renderHome()}
+function toggleWish(id){let i=state.wishlist.indexOf(id);if(i>=0)state.wishlist.splice(i,1);else state.wishlist.push(id);save();renderHome()}
+function detail(id){let p=products.find(x=>x.id===id);document.getElementById("app").innerHTML=`<div class="card"><button class="btn secondary" onclick="renderHome()">← Back</button><h2>${p.name}</h2><img src="${p.img}" style="max-width:450px;width:100%;border-radius:8px"><h3>${money(p.price)}</h3><p>High-quality ${p.cat.toLowerCase()} product. This demo provides enough controls for functional testing.</p><p>Availability: ${p.stock?"In Stock":"Out of Stock"}</p><button class="btn primary" onclick="addCart(${p.id})">Add to Cart</button></div>`}
+function showCart(){let total=0;document.getElementById("app").innerHTML=`<div class="card"><h2>Shopping Cart</h2>${state.cart.length?state.cart.map(x=>{let p=products.find(p=>p.id===x.id);total+=p.price*x.qty;return `<div class="metric" style="margin:8px 0"><b>${p.name}</b> — ${money(p.price)} × <input style="width:70px" type="number" min="1" max="${p.stock}" value="${x.qty}" onchange="qty(${p.id},this.value)"> <button class="btn danger" onclick="removeCart(${p.id})">Remove</button></div>`}).join(""):`<div class="notice">Cart is empty.</div>`}<h3>Total: ${money(total)}</h3><button class="btn primary" onclick="checkout()">Checkout</button></div>`}
+function qty(id,n){let x=state.cart.find(x=>x.id===id),p=products.find(p=>p.id===id);if(x)x.qty=Math.min(Math.max(1,+n),p.stock);save();showCart()}
+function removeCart(id){state.cart=state.cart.filter(x=>x.id!==id);save();showCart()}
+function showWishlist(){document.getElementById("app").innerHTML=`<div class="card"><h2>Wishlist</h2>${state.wishlist.length?state.wishlist.map(id=>{let p=products.find(p=>p.id===id);return `<div class="metric" style="margin:8px 0"><b>${p.name}</b> — ${money(p.price)} <button class="btn primary" onclick="addCart(${id})">Move to Cart</button><button class="btn danger" onclick="toggleWish(${id})">Remove</button></div>`}).join(""):`<div class="notice">Wishlist is empty.</div>`}</div>`}
+
+function checkout(){if(!state.cart.length){alert("Cart is empty");return}if(!state.user){alert("Login is required for this demo checkout");openLogin();return}document.getElementById("app").innerHTML=`<div class="card"><h2>Checkout & Payment</h2><div class="form-grid"><label>Address<textarea id="address" required>123 Demo Street, Visakhapatnam</textarea></label><label>Coupon<input id="coupon" placeholder="Try SAVE10"></label><label>Payment<select id="payment"><option>Credit/Debit Card</option><option>UPI</option><option>Net Banking</option><option>Wallet</option></select></label><label>Card/UPI Reference<input id="payref" required></label></div><div id="paymsg"></div><button class="btn primary" onclick="placeOrder()">Place Order</button></div>`}
+function placeOrder(){let ref=payref.value.trim();if(!ref){paymsg.innerHTML='<div class="notice">Payment reference is required.</div>';return}let total=state.cart.reduce((s,x)=>s+products.find(p=>p.id===x.id).price*x.qty,0),discount=coupon.value==="SAVE10"?total*.1:0,order={id:"ORD"+Date.now(),total:total-discount,status:"Confirmed",date:new Date().toLocaleString()};state.orders.push(order);state.cart=[];save();paymsg.innerHTML=`<div class="notice">Payment successful. Order ${order.id} created. Total ${money(order.total)}</div>`}
+function profile(){document.getElementById("app").innerHTML=`<div class="card"><h2>Profile / Account</h2>${state.user?`<p><b>Name:</b> ${state.user.name}</p><p><b>Email:</b> ${state.user.email}</p><button class="btn danger" onclick="logout()">Logout</button>`:`<div class="notice">Please login.</div>`}</div>`}
+function logout(){state.user=null;save();renderHome()}
+
+function renderModule(m){
+let rows=scenarios.filter(x=>x[0]===m);document.getElementById("app").innerHTML=`<div class="card"><h2>${m} — Test Scenarios</h2><table><thead><tr><th>ID</th><th>Reference</th><th>Description</th><th>Priority</th><th>No. of Test Cases</th></tr></thead><tbody>${rows.map((x,i)=>`<tr><td>${i+1}</td><td>${x[1]}</td><td>${x[2]}</td><td><span class="badge ${x[3].toLowerCase()}">${x[3]}</span></td><td>1</td></tr>`).join("")}</tbody></table></div>`}
+
+function renderTests(){
+document.getElementById("app").innerHTML=`<div class="card"><div class="section-title"><div><h2>Test Runner</h2><p>Execute the supplied test scenarios against this demo application.</p></div><button class="btn danger" onclick="clearResults()">Clear Results</button></div><div class="toolbar"><select id="filterModule" onchange="renderTestRows()"><option value="">All Modules</option>${modules.map(m=>`<option>${m}</option>`).join("")}</select><select id="filterStatus" onchange="renderTestRows()"><option value="">All Status</option><option>Not Run</option><option>Pass</option><option>Fail</option><option>Blocked</option></select></div><div id="testRows" class="test-list"></div></div>`;renderTestRows()}
+function renderTestRows(){let fm=document.getElementById("filterModule")?.value||"",fs=document.getElementById("filterStatus")?.value||"",arr=scenarios.filter(x=>(!fm||x[0]===fm)&&(!fs||(state.results[x[1]]||"Not Run")===fs));document.getElementById("testRows").innerHTML=arr.map(x=>`<div class="test-row"><div><b>${x[1]}</b><br><small>${x[0]}</small></div><div>${x[2]}</div><div><select onchange="setResult('${x[1]}',this.value)"><option>Not Run</option><option ${state.results[x[1]]==="Pass"?"selected":""}>Pass</option><option ${state.results[x[1]]==="Fail"?"selected":""}>Fail</option><option ${state.results[x[1]]==="Blocked"?"selected":""}>Blocked</option></select></div></div>`).join("")}
+function setResult(id,v){state.results[id]=v;save()}
+function clearResults(){state.results={};save();renderTestRows()}
+function renderReports(){let vals=Object.values(state.results),pass=vals.filter(x=>x==="Pass").length,fail=vals.filter(x=>x==="Fail").length,blocked=vals.filter(x=>x==="Blocked").length,total=scenarios.length;document.getElementById("app").innerHTML=`<div class="card"><h2>Test Execution Report</h2><div class="grid"><div class="metric"><strong>${total}</strong>Total Scenarios</div><div class="metric"><strong>${pass}</strong>Passed</div><div class="metric"><strong>${fail}</strong>Failed</div><div class="metric"><strong>${blocked}</strong>Blocked</div><div class="metric"><strong>${total-vals.length}</strong>Not Run</div></div></div><div class="card"><h3>Execution Results</h3><table><thead><tr><th>Reference</th><th>Module</th><th>Description</th><th>Status</th></tr></thead><tbody>${scenarios.map(x=>`<tr><td>${x[1]}</td><td>${x[0]}</td><td>${x[2]}</td><td class="${(state.results[x[1]]||"Not Run").toLowerCase().replace(" ","")}">${state.results[x[1]]||"Not Run"}</td></tr>`).join("")}</tbody></table></div>`}
+renderHome();
+</script>
+</body>
+</html>
